@@ -36,6 +36,17 @@
 
   &__comments {
     border-bottom: 1px solid lightgrey;
+    height: 150px;
+    overflow-y: auto;
+    &::-webkit-scrollbar {
+      width: 8px;
+      background-color: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+      background-color: rgba(#58395b, .6);
+    }
   }
 
   &__comment {
