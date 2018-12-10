@@ -2,11 +2,13 @@ const Map = require('../modules/api.yandex.map');
 //todo: поставить дату при добавлении комментария
 //todo: сделать чтобы вся инфа переходила в балун (возможно через локал стор)
 //todo: при нажатии на метку, чтобы открывалось меню комментов на одинарной метке
-//todo: посмотреть видео
+//todo: отрендерит комменты в шаблонизаторе
 
 export default class {
     constructor() {
         this.myApiMap = new Map();
+        //todo: нужно будет из локал стор загружать, если он не пуст
+        this.storageArr = [];
 
         this.init();
     }
@@ -23,7 +25,7 @@ export default class {
             //console.log(e);
             let position = await this.myApiMap.getMapPosition(e);
 
-            //console.log(position);
+            console.log(position);
             this.showFormPopUp(position);
             //this.myApiMap.createPlacemark(position);
         });
@@ -51,13 +53,25 @@ export default class {
             const inputName = document.querySelector('#name');
             const inputArea = document.querySelector('#area');
             const inputComment = document.querySelector('#comment');
-           /* console.log(inputName.value);
-            console.log(inputArea.value);
-            console.log(inputComment.value);*/
+            const date = new Date();
+            let fullDate = `${date.getFullYear()}.${date.getMonth()}.${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
 
             e.preventDefault();
-            this.createComment(inputName.value, inputArea.value, inputComment.value);
+            this.createComment(inputName.value, inputArea.value, inputComment.value, fullDate);
             this.myApiMap.createPlacemark(position);
+
+            //todo: в локал стор отправить массив (подумать или не неужно...)
+            let storageObj = {
+                address: position.address,
+                coords: position.coords,
+                name: inputName.value,
+                area: inputArea.value,
+                comment: inputComment.value,
+                date: fullDate
+            };
+            this.storageArr.push(storageObj);
+
+            console.log(this.storageArr);
 
             inputName.value = '';
             inputArea.value = '';
@@ -65,12 +79,12 @@ export default class {
         }
     };
 
-    createComment(name, area, comment) {
+    createComment(name, area, comment, fullDate) {
         const block = document.querySelector('.pop-up__comments');
         let commentDiv = document.createElement('div');
 
         commentDiv.classList.add('pop-up__comment');
-        commentDiv.innerHTML = `<p class="comment-info"><span class="name">${name} </span><span class="area">${area} </span><span class="date"></span></p><p class="comment-text">${comment}</p>`;
+        commentDiv.innerHTML = `<p class="comment-info"><span class="name">${name} </span><span class="area">${area} </span><span class="date">${fullDate}</span></p><p class="comment-text">${comment}</p>`;
         block.appendChild(commentDiv);
     };
 
@@ -80,7 +94,7 @@ export default class {
         popUp.onclick = (e) => {
             let targetElem = e.target;
 
-            console.log(targetElem.getAttribute('class'));
+            //console.log(targetElem.getAttribute('class'));
             if (targetElem.classList.contains('pop-up__exit') || targetElem.classList.contains('pop-up')) {
                 e.preventDefault();
                 console.log('скрыть поап');
